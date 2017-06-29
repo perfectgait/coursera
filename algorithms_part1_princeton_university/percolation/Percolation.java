@@ -1,13 +1,11 @@
 /******************************************************************************
  *  Compilation:  javac Percolation.java
  *  Execution:    java Percolation
- *  Dependencies: StdDraw.java StdOut.java
+ *  Dependencies: WeightedQuickUnionUF.java StdOut.java
  *
  *  Implements percolation grid
  ******************************************************************************/
-import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdStats;
+
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -17,6 +15,7 @@ public class Percolation {
     private int openCount;
     private boolean[] openSites;
     private WeightedQuickUnionUF union;
+    private WeightedQuickUnionUF unionNotUsingVirtualBottom;
 
     /**
      * @param n grid size
@@ -31,12 +30,14 @@ public class Percolation {
         this.virtualTopIndex = n * n;
         this.virtualBottomIndex = n * n + 1;
         this.union = new WeightedQuickUnionUF(n * n + 2);
+        this.unionNotUsingVirtualBottom = new WeightedQuickUnionUF(n * n + 1);
         this.openSites = new boolean[n * n + 2];
-
-        java.util.Arrays.fill(this.openSites, false);
-
         this.openSites[virtualTopIndex] = true;
         this.openSites[virtualBottomIndex] = true;
+
+        for (int i = 0; i < n * n; i++) {
+            this.openSites[i] = false;
+        }
     }
 
     /**
@@ -47,55 +48,44 @@ public class Percolation {
      */
     public void open(int row, int col) {
         if (!this.indexesAreValid(row, col)) {
-            throw new IndexOutOfBoundsException();
+            throw new IllegalArgumentException();
         }
 
         int flattenedIndex = this.xyTo1D(row, col);
 
         if (!openSites[flattenedIndex]) {
-            openSites[flattenedIndex] = true;
-            openCount++;
+            this.openSites[flattenedIndex] = true;
+            this.openCount++;
 
             // Union with the virtual top if the top row is referenced
-            if (row == 0) {
+            if (row == 1) {
                 this.union.union(flattenedIndex, this.virtualTopIndex);
+                this.unionNotUsingVirtualBottom.union(flattenedIndex, this.virtualTopIndex);
             }
 
             // Union with the virtual bottom if the bottom row is referenced
-            if (row == n - 1) {
+            if (row == this.n) {
                 this.union.union(flattenedIndex, this.virtualBottomIndex);
-            }
-
-            if (this.indexesAreValid(row - 1, col - 1) && this.isOpen(row - 1, col - 1)) {
-                this.union.union(flattenedIndex, this.xyTo1D(row - 1, col - 1));
             }
 
             if (this.indexesAreValid(row - 1, col) && this.isOpen(row - 1, col)) {
                 this.union.union(flattenedIndex, this.xyTo1D(row - 1, col));
-            }
-
-            if (this.indexesAreValid(row - 1, col + 1) && this.isOpen(row - 1, col + 1)) {
-                this.union.union(flattenedIndex, this.xyTo1D(row - 1, col + 1));
+                this.unionNotUsingVirtualBottom.union(flattenedIndex, this.xyTo1D(row - 1, col));
             }
 
             if (this.indexesAreValid(row, col - 1) && this.isOpen(row, col - 1)) {
                 this.union.union(flattenedIndex, this.xyTo1D(row, col - 1));
+                this.unionNotUsingVirtualBottom.union(flattenedIndex, this.xyTo1D(row, col - 1));
             }
 
             if (this.indexesAreValid(row, col + 1) && this.isOpen(row, col + 1)) {
                 this.union.union(flattenedIndex, this.xyTo1D(row, col + 1));
-            }
-
-            if (this.indexesAreValid(row + 1, col - 1) && this.isOpen(row + 1, col - 1)) {
-                this.union.union(flattenedIndex, this.xyTo1D(row + 1, col - 1));
+                this.unionNotUsingVirtualBottom.union(flattenedIndex, this.xyTo1D(row, col + 1));
             }
 
             if (this.indexesAreValid(row + 1, col) && this.isOpen(row + 1, col)) {
                 this.union.union(flattenedIndex, this.xyTo1D(row + 1, col));
-            }
-
-            if (this.indexesAreValid(row + 1, col + 1) && this.isOpen(row + 1, col + 1)) {
-                this.union.union(flattenedIndex, this.xyTo1D(row + 1, col + 1));
+                this.unionNotUsingVirtualBottom.union(flattenedIndex, this.xyTo1D(row + 1, col));
             }
         }
     }
@@ -109,7 +99,7 @@ public class Percolation {
      */
     public boolean isOpen(int row, int col) {
         if (!this.indexesAreValid(row, col)) {
-            throw new IndexOutOfBoundsException();
+            throw new IllegalArgumentException();
         }
 
         return openSites[this.xyTo1D(row, col)];
@@ -124,10 +114,11 @@ public class Percolation {
      */
     public boolean isFull(int row, int col) {
         if (!this.indexesAreValid(row, col)) {
-            throw new IndexOutOfBoundsException();
+            throw new IllegalArgumentException();
         }
 
-        return this.isOpen(row, col) && this.union.connected(this.xyTo1D(row, col), this.virtualTopIndex);
+        return this.isOpen(row, col)
+            && this.unionNotUsingVirtualBottom.connected(this.xyTo1D(row, col), this.virtualTopIndex);
     }
 
     /**
@@ -156,10 +147,10 @@ public class Percolation {
      */
     private int xyTo1D(int row, int column) {
         if (!this.indexesAreValid(row, column)) {
-            throw new IndexOutOfBoundsException();
+            throw new IllegalArgumentException();
         }
 
-        return this.n * row + column;
+        return this.n * (row - 1) + (column - 1);
     }
 
     /**
@@ -170,137 +161,10 @@ public class Percolation {
      * @return whether or not the coordinate is valid
      */
     private boolean indexesAreValid(int row, int column) {
-        return row >= 0 && column >= 0 && row < this.n && column < this.n;
+        return row >= 1 && column >= 1 && row <= this.n && column <= this.n;
     }
 
     public static void main(String[] args) {
-        Percolation percolation = new Percolation(5);
-
-        // Tests for indexesAreValid
-        if (percolation.indexesAreValid(0, 0)) {
-            StdOut.println("The index (0, 0) is valid");
-        }
-        else {
-            StdOut.println("The index (0, 0) is not valid and it should be");
-        }
-
-        if (percolation.indexesAreValid(2, 2)) {
-            StdOut.println("The index (2, 2) is valid");
-        }
-        else {
-            StdOut.println("The index (2, 2) is not valid and it should be");
-        }
-
-        if (percolation.indexesAreValid(4, 4)) {
-            StdOut.println("The index (4, 4) is valid");
-        }
-        else {
-            StdOut.println("The index (4, 4) is not valid and it should be");
-        }
-
-        if (percolation.indexesAreValid(-1, 0)) {
-            StdOut.println("The index (-1, 0) is valid and it should not be");
-        }
-        else {
-            StdOut.println("The index (-1, 0) is not valid");
-        }
-
-        if (percolation.indexesAreValid(5, 0)) {
-            StdOut.println("The index (5, 0) is valid and it should not be");
-        }
-        else {
-            StdOut.println("The index (5, 0) is not valid");
-        }
-
-        if (percolation.indexesAreValid(0, 5)) {
-            StdOut.println("The index (0, 5) is valid and it should not be");
-        }
-        else {
-            StdOut.println("The index (0, 5) is not valid");
-        }
-
-        if (percolation.indexesAreValid(5, 5)) {
-            StdOut.println("The index (5, 5) is valid and it should not be");
-        }
-        else {
-            StdOut.println("The index (5, 5) is not valid");
-        }
-
-        // Tests for xyTo1D()
-        StdOut.println("First position of the first row: " + percolation.xyTo1D(0, 0));
-        StdOut.println("Last position of the first row: " + percolation.xyTo1D(0, 4));
-        StdOut.println("First position of the second row: " + percolation.xyTo1D(1, 0));
-        StdOut.println("Last position of the second row: " + percolation.xyTo1D(1, 4));
-        StdOut.println("First position of the third row: " + percolation.xyTo1D(2, 0));
-        StdOut.println("Last position of the third row: " + percolation.xyTo1D(2, 4));
-        StdOut.println("First position of the fourth row: " + percolation.xyTo1D(3, 0));
-        StdOut.println("Last position of the fourth row: " + percolation.xyTo1D(3, 4));
-        StdOut.println("First position of the fifth row: " + percolation.xyTo1D(4, 0));
-        StdOut.println("Last position of the fifth row: " + percolation.xyTo1D(4, 4));
-
-        // Tests for open()
-        percolation.open(0, 1);
-        percolation.open(1, 1);
-        percolation.open(1, 2);
-        percolation.open(4, 3);
-
-        if (percolation.union.connected(percolation.xyTo1D(0, 1), percolation.virtualTopIndex)) {
-            StdOut.println("Site (0, 1) is connected to the virtual top");
-        }
-        else {
-            StdOut.println("Site (0, 1) is NOT connected to the virtual top and it should be");
-        }
-
-        if (percolation.union.connected(percolation.xyTo1D(1, 1), percolation.xyTo1D(1, 2))) {
-            StdOut.println("Sites (1, 1) and (1, 2) are connected");
-        }
-        else {
-            StdOut.println("Sites (1, 1) and (1, 2) are NOT connected and they should be");
-        }
-
-        if (percolation.union.connected(percolation.xyTo1D(4, 3), percolation.virtualBottomIndex)) {
-            StdOut.println("Site (4, 3) is connected to the virtual bottom");
-        }
-        else {
-            StdOut.println("Site (4, 3) is NOT connected to the virtual bottom and it should be");
-        }
-
-        // Tests for isOpen()
-        if (percolation.isOpen(1, 1)) {
-            StdOut.println("Site (1, 1) is open");
-        }
-        else {
-            StdOut.println("Site (1, 1) is NOT open and it should be");
-        }
-
-        if (percolation.isOpen(1, 2)) {
-            StdOut.println("Site (1, 2) is open");
-        }
-        else {
-            StdOut.println("Site (1, 2) is NOT open and it should be");
-        }
-
-        // Tests for isFull()
-        if (percolation.isFull(1, 1)) {
-            StdOut.println("Site (1, 1) is full");
-        }
-        else {
-            StdOut.println("Site (1, 1) is not full and it should be");
-        }
-
-        // Tests for numberOfOpenSites()
-        StdOut.println("There are " + percolation.numberOfOpenSites() + " open sites and there should be 4");
-
-        // Tests for percolates
-        percolation.open(2, 2);
-        percolation.open(3, 2);
-        percolation.open(4, 2);
-
-        if (percolation.percolates()) {
-            StdOut.println("The system percolates");
-        }
-        else {
-            StdOut.println("The system does not percolate and it should");
-        }
+        // Tests can go here
     }
 }
