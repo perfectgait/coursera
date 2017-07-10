@@ -4,3 +4,6 @@ compiled
 # IntelliJ
 *.iml
 .idea
+
+# Coverage Reports
+coverage
