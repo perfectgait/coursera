@@ -13,10 +13,10 @@ import edu.princeton.cs.algs4.StdDraw;
 
 public class Point implements Comparable<Point> {
 
-    private final int x;     // x-coordinate of this point
-    private final int y;     // y-coordinate of this point
+    public final int x;     // x-coordinate of this point
+    public final int y;     // y-coordinate of this point
 
-    private class PointComparator implements Comparator<Point> {
+    private class SlopeOrder implements Comparator<Point> {
         /**
          * Compare two points against this point
          *
@@ -87,16 +87,16 @@ public class Point implements Comparable<Point> {
         }
 
         // Horizontal line
-        if (that.y - this.y == 0) {
-            return 0.0;
+        if (that.y == this.y) {
+            return +0.0;
         }
 
         // Vertical line
-        if (that.x - this.x == 0) {
+        if (that.x == this.x) {
             return Double.POSITIVE_INFINITY;
         }
 
-        return (that.y - this.y) / (that.x - this.x);
+        return (double) (that.y - this.y) / (that.x - this.x);
     }
 
     /**
@@ -128,9 +128,8 @@ public class Point implements Comparable<Point> {
      * @return the Comparator that defines this ordering on points
      */
     public Comparator<Point> slopeOrder() {
-        return new PointComparator();
+        return new SlopeOrder();
     }
-
 
     /**
      * Returns a string representation of this point.
