@@ -1,65 +1,48 @@
-import edu.princeton.cs.algs4.StdOut;
-
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class BruteCollinearPoints {
-    private LineSegment[] segments;
+    private ArrayList<LineSegment> segments;
     private int segmentCount;
 
+    /**
+     * Examine 4 points at a time and check whether they all lie on the same line segment.  If they do, store the line
+     * segment.
+     *
+     * @param points the points to process
+     */
     public BruteCollinearPoints(Point[] points) {
         if (points == null) {
             throw new IllegalArgumentException("points may not be null");
         }
 
-        Point[] foundPoints = new Point[points.length];
-        int i = 0;
+        Arrays.sort(points);
 
-        for (Point point : points) {
-            if (point == null) {
+        for (int i = 0; i < points.length; i++) {
+            if (points[i] == null) {
                 throw new IllegalArgumentException("no points may be null");
             }
 
-            if (Arrays.asList(foundPoints).contains(point)) {
+            if (i > 0 && points[i].compareTo(points[i - 1]) == 0) {
                 throw new IllegalArgumentException("duplicate points are not allowed");
             }
-
-            foundPoints[i++] = point;
         }
 
-        this.segments = new LineSegment[2];
+        this.segments = new ArrayList<>();
         this.segmentCount = 0;
-        int j = 0;
 
-        // @TODO Sort the points MAYBE
-        // @TODO Remember the indexes of the points that were used and don't look at them again.  MAYBE
+        for (int j = 0; j < points.length; j++) {
+            for (int k = j + 1; k < points.length; k++) {
+                double slope1 = points[j].slopeTo(points[k]);
 
-
-        for (Point point1 : points) {
-//            outerloop:
-
-            for (Point point2 : points) {
-                if (point1.compareTo(point2) < 0) {
-                    double slope1 = point1.slopeTo(point2);
-
-                    for (Point point3 : points) {
-                        if (point2.compareTo(point3) < 0) {
-                            // If the first two slopes are different there is no need to continue evaluation
-                            if (slope1 == point1.slopeTo(point3)) {
-                                for (Point point4 : points) {
-                                    if (point3.compareTo(point4) < 0) {
-                                        if (slope1 == point1.slopeTo(point4)) {
-                                            this.segments[j++] = new LineSegment(point1, point4);
-                                            StdOut.println(point1 + " " + point2 + " " + point3 + " " + point4);
-                                            StdOut.println(point1 + " -> " + point2 + " with slope: " + slope1);
-                                            StdOut.println(point1 + " -> " + point3 + " with slope: " + point1.slopeTo(point3));
-                                            StdOut.println(point1 + " -> " + point4 + " with slope: " + point1.slopeTo(point4));
-//                                            StdOut.println(lineSegment);
-
-                                            // @TODO Since this first point is used as a starting point here, break out of the outer most for loop here.
-//                                            break outerloop;
-                                        }
-                                    }
-                                }
+                for (int l = k + 1; l < points.length; l++) {
+                    // If the first two slopes don't match, do nothing
+                    if (slope1 == points[j].slopeTo(points[l])) {
+                        for (int m = l + 1; m < points.length; m++) {
+                            // All of the slopes match and there are 4 points
+                            if (slope1 == points[j].slopeTo(points[m])) {
+                                this.segments.add(new LineSegment(points[j], points[m]));
+                                this.segmentCount++;
                             }
                         }
                     }
@@ -68,11 +51,21 @@ public class BruteCollinearPoints {
         }
     }
 
+    /**
+     * Get the number of line segments found
+     *
+     * @return the number of line segments
+     */
     public int numberOfSegments() {
         return this.segmentCount;
     }
 
+    /**
+     * Get the line segments found
+     *
+     * @return the line segments
+     */
     public LineSegment[] segments() {
-        return this.segments;
+        return this.segments.toArray(new LineSegment[this.segments.size()]);
     }
 }
