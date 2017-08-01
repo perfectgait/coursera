@@ -5,7 +5,6 @@
  *
  *  An immutable data type for points in the plane.
  *  For use on Coursera, Algorithms Part I programming assignment.
- *
  ******************************************************************************/
 
 import java.util.Comparator;
@@ -22,7 +21,9 @@ public class Point implements Comparable<Point> {
          *
          * @param point1 the first point to compare
          * @param point2 the second point to compare
-         * @return -1 if point1 is < point2, 0 if point1 = point2 and +1 if point1 > point2
+         * @return -1 if the slope from this point to point1's is < the slope from this point to point2, 0 if the slope
+         *            from this point to point1 = the slope from this point to point2 and +1 if the slope from this
+         *            point to point1 > the slope from this point to point2
          */
         public int compare(Point point1, Point point2) {
             double slope1 = slopeTo(point1);
@@ -31,7 +32,8 @@ public class Point implements Comparable<Point> {
             if (slope1 < slope2) {
                 return -1;
             } else if (slope1 == slope2) {
-                return 0;
+                return point1.compareTo(point2);
+//                return 0;
             }
 
             return 1;

@@ -1,3 +1,11 @@
+/******************************************************************************
+ *  Compilation:  javac BruteCollinearPoints.java
+ *  Execution:    java BruteCollinearPoints
+ *  Dependencies: none
+ *
+ *  Find collinear points using brute force.
+ ******************************************************************************/
+
 import java.util.Arrays;
 import java.util.ArrayList;
 
