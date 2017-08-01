@@ -22,9 +22,11 @@ class BruteCollinearPointsTest {
     @Test
     void duplicatePointsAreNotAllowed() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Point[] duplicatePoints = new Point[2];
+            Point[] duplicatePoints = new Point[4];
             duplicatePoints[0] = new Point(10, 10);
-            duplicatePoints[1] = new Point(10, 10);
+            duplicatePoints[1] = new Point(0, 10);
+            duplicatePoints[2] = new Point(10, 0);
+            duplicatePoints[3] = new Point(10, 10);
 
             new BruteCollinearPoints(duplicatePoints);
         });

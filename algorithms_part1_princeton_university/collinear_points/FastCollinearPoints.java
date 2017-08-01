@@ -27,6 +27,8 @@ public class FastCollinearPoints {
             throw new IllegalArgumentException("points may not be null");
         }
 
+        Arrays.sort(points);
+
         for (int i = 0; i < points.length; i++) {
             if (points[i] == null) {
                 throw new IllegalArgumentException("no points may be null");
@@ -40,6 +42,7 @@ public class FastCollinearPoints {
         this.segments = new ArrayList<>();
         this.segmentCount = 0;
         Point[] copyOfPoints = Arrays.copyOf(points, points.length);
+        int j;
 
         for (int i = 0; i < points.length; i++) {
             Point currentPoint = points[i];
@@ -49,22 +52,39 @@ public class FastCollinearPoints {
 
             Arrays.sort(copyOfPoints, currentPoint.slopeOrder());
             int numberOfCollinearPoints = 0;
-            int j;
             double previousSlope = Double.NEGATIVE_INFINITY;
+            double ignoredSlope = Double.NEGATIVE_INFINITY;
 
             for (j = 0; j < copyOfPoints.length; j++) {
-                if (points[j] != currentPoint) {
-                    StdOut.println(points[j] + " slode: " + currentPoint.slopeTo(points[j]));
+                if (copyOfPoints[j] != currentPoint) {
+                    StdOut.print(copyOfPoints[j]);
 
-                    if (previousSlope == Double.NEGATIVE_INFINITY || currentPoint.slopeTo(copyOfPoints[j]) == previousSlope) {
-                        numberOfCollinearPoints++;
-                    } else {
-                        if (numberOfCollinearPoints >= 3) {
-                            this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
-                            this.segmentCount++;
-                        }
+                    // If currentPoint is larger than copyOfPoints[j], currentPoint is not the first point in this
+                    // segment.
 
+                    // @TODO If currentPoint is larger than copyOfPoints[j], any other points that have the same slope should also be skipped
+                    if (currentPoint.compareTo(copyOfPoints[j]) >= 0) {
                         numberOfCollinearPoints = 0;
+                        ignoredSlope = currentPoint.slopeTo(copyOfPoints[j]);
+                        StdOut.print("\n");
+                    } else {
+                        StdOut.print(" slope: " + currentPoint.slopeTo(copyOfPoints[j]));
+
+                        if ((previousSlope == Double.NEGATIVE_INFINITY || currentPoint.slopeTo(copyOfPoints[j]) == previousSlope)
+                                && (ignoredSlope == Double.NEGATIVE_INFINITY || currentPoint.slopeTo(copyOfPoints[j]) != ignoredSlope)) {
+                            numberOfCollinearPoints++;
+                            StdOut.print(" slope matched and point less\n");
+                        } else {
+                            StdOut.print(" slope did not match and numberOfCollinearPoints is: " + numberOfCollinearPoints + "\n");
+                            if (numberOfCollinearPoints >= 3) {
+                                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
+                                this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
+                                this.segmentCount++;
+                            }
+
+                            // This point is collinear with the currentPoint by itself
+                            numberOfCollinearPoints = 1;
+                        }
                     }
 
                     previousSlope = currentPoint.slopeTo(copyOfPoints[j]);
@@ -73,9 +93,12 @@ public class FastCollinearPoints {
 
             // If the counter never reset and we reached the end, don't forget to add the final segment.
             if (numberOfCollinearPoints >= 3) {
-                this.segments.add(new LineSegment(currentPoint, points[j - 1]));
+                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
+                this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
             }
         }
+
+        StdOut.println("===============DONE==============");
     }
 
     /**

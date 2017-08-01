@@ -32,8 +32,9 @@ public class Point implements Comparable<Point> {
             if (slope1 < slope2) {
                 return -1;
             } else if (slope1 == slope2) {
+                // It is important that all points which form the same slope are ordered according to their natural
+                // order.
                 return point1.compareTo(point2);
-//                return 0;
             }
 
             return 1;
