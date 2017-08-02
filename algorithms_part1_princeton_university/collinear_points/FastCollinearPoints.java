@@ -44,38 +44,60 @@ public class FastCollinearPoints {
         Point[] copyOfPoints = Arrays.copyOf(points, points.length);
         int j;
 
-        for (int i = 0; i < points.length; i++) {
-            Point currentPoint = points[i];
+//        for (int i = 0; i < points.length; i++) {
+        for (Point currentPoint : points) {
+//            Point currentPoint = points[i];
 
             StdOut.println("=============================");
             StdOut.println("currentPoint: " + currentPoint);
 
+            // @TODO If currentPoint is not included in copyOfPoints, the code below can be simplified.
+
             Arrays.sort(copyOfPoints, currentPoint.slopeOrder());
             int numberOfCollinearPoints = 0;
+            int currentPointIndex = 0;
             double previousSlope = Double.NEGATIVE_INFINITY;
             double ignoredSlope = Double.NEGATIVE_INFINITY;
 
             for (j = 0; j < copyOfPoints.length; j++) {
-                if (copyOfPoints[j] != currentPoint) {
+                // Ignore the degenerate segment
+//                if (copyOfPoints[j] != currentPoint) {
+
+                double currentSlope = currentPoint.slopeTo(copyOfPoints[j]);
+
+                if (currentPoint.compareTo(copyOfPoints[j]) < 0) {
                     StdOut.print(copyOfPoints[j]);
+//                    double currentSlope = currentPoint.slopeTo(copyOfPoints[j]);
 
                     // If currentPoint is larger than copyOfPoints[j], currentPoint is not the first point in this
                     // segment.
 
                     // @TODO If currentPoint is larger than copyOfPoints[j], any other points that have the same slope should also be skipped
-                    if (currentPoint.compareTo(copyOfPoints[j]) >= 0) {
-                        numberOfCollinearPoints = 0;
-                        ignoredSlope = currentPoint.slopeTo(copyOfPoints[j]);
-                        StdOut.print("\n");
-                    } else {
+//                    if (currentPoint.compareTo(copyOfPoints[j]) >= 0) {
+//                        numberOfCollinearPoints = 0;
+//                        ignoredSlope = currentPoint.slopeTo(copyOfPoints[j]);
+//                        StdOut.print("\n");
+//                    } else {
                         StdOut.print(" slope: " + currentPoint.slopeTo(copyOfPoints[j]));
 
-                        if ((previousSlope == Double.NEGATIVE_INFINITY || currentPoint.slopeTo(copyOfPoints[j]) == previousSlope)
-                                && (ignoredSlope == Double.NEGATIVE_INFINITY || currentPoint.slopeTo(copyOfPoints[j]) != ignoredSlope)) {
-                            numberOfCollinearPoints++;
-                            StdOut.print(" slope matched and point less\n");
+                        // If the slope matches and should not be ignored
+                        if ((previousSlope == Double.NEGATIVE_INFINITY || currentSlope == previousSlope)
+                                && (ignoredSlope == Double.NEGATIVE_INFINITY || currentSlope != ignoredSlope)) {
+                            // If currentPoint is > copyOfPoints[j], currentPoint cannot be the first point in the
+                            // segment.  This means that copyOfPoints[j] and all other points that share its slope with
+                            // currentPoint should be ignored.  The line segment with that slope is not maximal.
+//                            if (currentPoint.compareTo(copyOfPoints[j]) >= 0) {
+//                                ignoredSlope = currentSlope;
+//                                numberOfCollinearPoints = 0;
+//                                StdOut.println(" slope matched but currentPoint is >= copyOfPoints[j]");
+//                            } else {
+                                numberOfCollinearPoints++;
+                                StdOut.println(" slope matched and currentPoint is < copyOfPoints[j]");
+//                            }
                         } else {
-                            StdOut.print(" slope did not match and numberOfCollinearPoints is: " + numberOfCollinearPoints + "\n");
+                            StdOut.println(" slope did not match or was ignored and numberOfCollinearPoints is: " + numberOfCollinearPoints);
+
+                            // @TODO Fix this.  What about the case where the previous point is the currentPoint?
                             if (numberOfCollinearPoints >= 3) {
                                 StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
                                 this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
@@ -85,14 +107,35 @@ public class FastCollinearPoints {
                             // This point is collinear with the currentPoint by itself
                             numberOfCollinearPoints = 1;
                         }
-                    }
+//                    }
 
                     previousSlope = currentPoint.slopeTo(copyOfPoints[j]);
+                } else if (currentPoint.compareTo(copyOfPoints[j]) > 0) {
+//                    currentPointIndex = j;
+//                } else {
+                    StdOut.println(copyOfPoints[j] + " was ignored");
+                    // Ignore any other points that share this slope because we know that currentPoint is >=
+                    // copyOfPoints[j] so points that share the same slope cannot belong to the maximal segment.
+                    ignoredSlope = currentSlope;
+
+                    // @TODO Fix this.  What about the case where the previous point is the currentPoint?
+                    if (numberOfCollinearPoints >= 3) {
+                        StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
+                        this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
+                        this.segmentCount++;
+                    }
                 }
             }
 
             // If the counter never reset and we reached the end, don't forget to add the final segment.
             if (numberOfCollinearPoints >= 3) {
+                // In case the last point in copyOfPoints is the currentPoint, rewind.
+                while (copyOfPoints[j - 1] == currentPoint) {
+                    j--;
+                }
+
+                StdOut.println("j: " + j);
+
                 StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
                 this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
             }
