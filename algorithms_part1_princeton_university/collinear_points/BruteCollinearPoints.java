@@ -10,8 +10,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 
 public class BruteCollinearPoints {
-    private ArrayList<LineSegment> segments;
-    private int segmentCount;
+    private final ArrayList<LineSegment> segments;
 
     /**
      * Examine 4 points at a time and check whether they all lie on the same line segment.  If they do, store the line
@@ -24,33 +23,34 @@ public class BruteCollinearPoints {
             throw new IllegalArgumentException("points may not be null");
         }
 
-        Arrays.sort(points);
-
-        for (int i = 0; i < points.length; i++) {
-            if (points[i] == null) {
+        for (Point point : points) {
+            if (point == null) {
                 throw new IllegalArgumentException("no points may be null");
             }
+        }
 
-            if (i > 0 && points[i].compareTo(points[i - 1]) == 0) {
+        Point[] copyOfPoints = Arrays.copyOf(points, points.length);
+        Arrays.sort(copyOfPoints);
+
+        for (int i = 1; i < copyOfPoints.length; i++) {
+            if (copyOfPoints[i].compareTo(copyOfPoints[i - 1]) == 0) {
                 throw new IllegalArgumentException("duplicate points are not allowed");
             }
         }
 
         this.segments = new ArrayList<>();
-        this.segmentCount = 0;
 
-        for (int j = 0; j < points.length; j++) {
-            for (int k = j + 1; k < points.length; k++) {
-                double slope1 = points[j].slopeTo(points[k]);
+        for (int j = 0; j < copyOfPoints.length; j++) {
+            for (int k = j + 1; k < copyOfPoints.length; k++) {
+                double slope1 = copyOfPoints[j].slopeTo(copyOfPoints[k]);
 
-                for (int l = k + 1; l < points.length; l++) {
+                for (int m = k + 1; m < copyOfPoints.length; m++) {
                     // If the first two slopes don't match, do nothing
-                    if (slope1 == points[j].slopeTo(points[l])) {
-                        for (int m = l + 1; m < points.length; m++) {
+                    if (Double.compare(slope1, copyOfPoints[j].slopeTo(copyOfPoints[m])) == 0) {
+                        for (int n = m + 1; n < copyOfPoints.length; n++) {
                             // All of the slopes match and there are 4 points
-                            if (slope1 == points[j].slopeTo(points[m])) {
-                                this.segments.add(new LineSegment(points[j], points[m]));
-                                this.segmentCount++;
+                            if (Double.compare(slope1, copyOfPoints[j].slopeTo(copyOfPoints[n])) == 0) {
+                                this.segments.add(new LineSegment(copyOfPoints[j], copyOfPoints[n]));
                             }
                         }
                     }
@@ -65,7 +65,7 @@ public class BruteCollinearPoints {
      * @return the number of line segments
      */
     public int numberOfSegments() {
-        return this.segmentCount;
+        return this.segments.size();
     }
 
     /**

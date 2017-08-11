@@ -13,7 +13,8 @@ class BruteCollinearPointsTest {
     @Test
     void noSinglePointCanBeNull() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Point[] pointsWithNull = new Point[1];
+            Point[] pointsWithNull = new Point[2];
+            pointsWithNull[1] = new Point(0, 0);
 
             new BruteCollinearPoints(pointsWithNull);
         });
