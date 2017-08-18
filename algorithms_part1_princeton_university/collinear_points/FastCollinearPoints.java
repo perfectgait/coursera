@@ -6,7 +6,7 @@
  *  Find collinear points using a faster, sorting based method.
  ******************************************************************************/
 
- import edu.princeton.cs.algs4.StdOut;
+// import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,8 +48,8 @@ public class FastCollinearPoints {
         for (Point currentPoint : points) {
 //            Point currentPoint = points[i];
 
-            StdOut.println("=============================");
-            StdOut.println("currentPoint: " + currentPoint);
+//            StdOut.println("=============================");
+//            StdOut.println("currentPoint: " + currentPoint);
 
             // @TODO If currentPoint is not included in copyOfPoints, the code below can be simplified.
 
@@ -58,6 +58,7 @@ public class FastCollinearPoints {
 //            int currentPointIndex = 0;
             double previousSlope = Double.NEGATIVE_INFINITY;
             double ignoredSlope = Double.NEGATIVE_INFINITY;
+            Point largestPointInSequence = null;
 
             for (j = 0; j < copyOfPoints.length; j++) {
                 // Ignore the degenerate segment
@@ -66,7 +67,7 @@ public class FastCollinearPoints {
                 double currentSlope = currentPoint.slopeTo(copyOfPoints[j]);
 
                 if (currentPoint.compareTo(copyOfPoints[j]) < 0) {
-                    StdOut.print(copyOfPoints[j]);
+//                    StdOut.print(copyOfPoints[j]);
 //                    double currentSlope = currentPoint.slopeTo(copyOfPoints[j]);
 
                     // If currentPoint is larger than copyOfPoints[j], currentPoint is not the first point in this
@@ -78,7 +79,7 @@ public class FastCollinearPoints {
 //                        ignoredSlope = currentPoint.slopeTo(copyOfPoints[j]);
 //                        StdOut.print("\n");
 //                    } else {
-                        StdOut.print(" slope: " + currentPoint.slopeTo(copyOfPoints[j]));
+//                        StdOut.print(" slope: " + currentPoint.slopeTo(copyOfPoints[j]));
 
                         // If the slope matches and should not be ignored
                         if ((previousSlope == Double.NEGATIVE_INFINITY || Double.compare(currentSlope, previousSlope) == 0)
@@ -92,17 +93,27 @@ public class FastCollinearPoints {
 //                                StdOut.println(" slope matched but currentPoint is >= copyOfPoints[j]");
 //                            } else {
                                 numberOfCollinearPoints++;
-                                StdOut.println(" slope matched and currentPoint is < copyOfPoints[j]");
+
+                                if (largestPointInSequence == null || copyOfPoints[j].compareTo(largestPointInSequence) > 0) {
+                                    largestPointInSequence = copyOfPoints[j];
+                                }
+//                                StdOut.println(" slope matched and currentPoint is < copyOfPoints[j]");
 //                            }
                         } else {
-                            StdOut.println(" slope did not match or was ignored and numberOfCollinearPoints is: " + numberOfCollinearPoints);
+//                            StdOut.println(" slope did not match or was ignored and numberOfCollinearPoints is: " + numberOfCollinearPoints);
 
                             // @TODO Fix this.  What about the case where the previous point is the currentPoint?
                             if (numberOfCollinearPoints >= 3) {
-                                int indexOfEndPoint = copyOfPoints[j - 1] == currentPoint ? j - 2 : j - 1;
-                                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[indexOfEndPoint]);
-                                this.segments.add(new LineSegment(currentPoint, copyOfPoints[indexOfEndPoint]));
+//                                int indexOfEndPoint = copyOfPoints[j - 1] == currentPoint ? j - 2 : j - 1;
+//                                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[indexOfEndPoint]);
+//                                StdOut.println("Adding line segment from " + currentPoint + " to " + largestPointInSequence);
+//                                this.segments.add(new LineSegment(currentPoint, copyOfPoints[indexOfEndPoint]));
+//                                this.segments.add(new LineSegment(currentPoint, largestPointInSequence));
+
+                                this.addLineSegment(currentPoint, largestPointInSequence);
                             }
+
+                            largestPointInSequence = null;
 
                             // This point is collinear with the currentPoint by itself
                             numberOfCollinearPoints = 1;
@@ -120,25 +131,36 @@ public class FastCollinearPoints {
 
                     // @TODO Fix this.  What about the case where the previous point is the currentPoint?
                     if (numberOfCollinearPoints >= 3) {
-                        int indexOfEndPoint = copyOfPoints[j - 1] == currentPoint ? j - 2 : j - 1;
-                        StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[indexOfEndPoint]);
-                        this.segments.add(new LineSegment(currentPoint, copyOfPoints[indexOfEndPoint]));
+//                        int indexOfEndPoint = copyOfPoints[j - 1] == currentPoint ? j - 2 : j - 1;
+//                        StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[indexOfEndPoint]);
+//                        StdOut.println("Adding line segment from " + currentPoint + " to " + largestPointInSequence);
+//                        this.segments.add(new LineSegment(currentPoint, copyOfPoints[indexOfEndPoint]));
+                        this.segments.add(new LineSegment(currentPoint, largestPointInSequence));
                         numberOfCollinearPoints = 0;
                     }
+
+                    largestPointInSequence = null;
                 }
             }
 
             // If the counter never reset and we reached the end, don't forget to add the final segment.
             if (numberOfCollinearPoints >= 3) {
+                if (copyOfPoints[j - 1] != currentPoint && copyOfPoints[j - 1].compareTo(largestPointInSequence) > 0) {
+                    largestPointInSequence = copyOfPoints[j - 1];
+                }
+
+
                 // In case the last point in copyOfPoints is the currentPoint, rewind.
                 while (copyOfPoints[j - 1] == currentPoint) {
                     j--;
                 }
 
-                StdOut.println("j: " + j);
+//                StdOut.println("j: " + j);
 
-                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
-                this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
+//                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
+//                StdOut.println("Adding line segment from " + currentPoint + " to " + largestPointInSequence);
+//                this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
+                this.segments.add(new LineSegment(currentPoint, largestPointInSequence));
             }
         }
 
@@ -161,5 +183,16 @@ public class FastCollinearPoints {
      */
     public LineSegment[] segments() {
         return this.segments.toArray(new LineSegment[this.segments.size()]);
+    }
+
+    /**
+     * Add a line segment from start to end
+     *
+     * @param start the starting point
+     * @param end the ending point
+     */
+    private void addLineSegment (Point start, Point end) {
+//        StdOut.println("Adding line segment from " + start + " to " + end);
+        this.segments.add(new LineSegment(start, end));
     }
 }
