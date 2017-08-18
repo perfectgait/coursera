@@ -32,139 +32,75 @@ public class FastCollinearPoints {
             }
         }
 
-        Arrays.sort(points);
+        Point[] copyOfPoints = Arrays.copyOf(points, points.length);
+        Arrays.sort(copyOfPoints);
 
-        for (int i = 1; i < points.length; i++) {
-            if (points[i].compareTo(points[i - 1]) == 0) {
+        for (int i = 1; i < copyOfPoints.length; i++) {
+            if (copyOfPoints[i].compareTo(copyOfPoints[i - 1]) == 0) {
                 throw new IllegalArgumentException("duplicate points are not allowed");
             }
         }
 
         this.segments = new ArrayList<>();
-        Point[] copyOfPoints = Arrays.copyOf(points, points.length);
+        Point[] secondCopyOfPoints = Arrays.copyOf(copyOfPoints, points.length);
         int j;
 
-//        for (int i = 0; i < points.length; i++) {
-        for (Point currentPoint : points) {
-//            Point currentPoint = points[i];
-
-//            StdOut.println("=============================");
-//            StdOut.println("currentPoint: " + currentPoint);
-
-            // @TODO If currentPoint is not included in copyOfPoints, the code below can be simplified.
-
-            Arrays.sort(copyOfPoints, currentPoint.slopeOrder());
+        for (Point currentPoint : copyOfPoints) {
+            Arrays.sort(secondCopyOfPoints, currentPoint.slopeOrder());
             int numberOfCollinearPoints = 0;
-//            int currentPointIndex = 0;
             double previousSlope = Double.NEGATIVE_INFINITY;
             double ignoredSlope = Double.NEGATIVE_INFINITY;
             Point largestPointInSequence = null;
 
-            for (j = 0; j < copyOfPoints.length; j++) {
-                // Ignore the degenerate segment
-//                if (copyOfPoints[j] != currentPoint) {
+            for (j = 0; j < secondCopyOfPoints.length; j++) {
+                double currentSlope = currentPoint.slopeTo(secondCopyOfPoints[j]);
 
-                double currentSlope = currentPoint.slopeTo(copyOfPoints[j]);
+                if (currentPoint.compareTo(secondCopyOfPoints[j]) < 0) {
+                    // If the slope matches and should not be ignored
+                    if ((previousSlope == Double.NEGATIVE_INFINITY || Double.compare(currentSlope, previousSlope) == 0)
+                            && (ignoredSlope == Double.NEGATIVE_INFINITY || Double.compare(currentSlope, ignoredSlope) != 0)) {
+                        numberOfCollinearPoints++;
 
-                if (currentPoint.compareTo(copyOfPoints[j]) < 0) {
-//                    StdOut.print(copyOfPoints[j]);
-//                    double currentSlope = currentPoint.slopeTo(copyOfPoints[j]);
-
-                    // If currentPoint is larger than copyOfPoints[j], currentPoint is not the first point in this
-                    // segment.
-
-                    // @TODO If currentPoint is larger than copyOfPoints[j], any other points that have the same slope should also be skipped
-//                    if (currentPoint.compareTo(copyOfPoints[j]) >= 0) {
-//                        numberOfCollinearPoints = 0;
-//                        ignoredSlope = currentPoint.slopeTo(copyOfPoints[j]);
-//                        StdOut.print("\n");
-//                    } else {
-//                        StdOut.print(" slope: " + currentPoint.slopeTo(copyOfPoints[j]));
-
-                        // If the slope matches and should not be ignored
-                        if ((previousSlope == Double.NEGATIVE_INFINITY || Double.compare(currentSlope, previousSlope) == 0)
-                                && (ignoredSlope == Double.NEGATIVE_INFINITY || Double.compare(currentSlope, ignoredSlope) != 0)) {
-                            // If currentPoint is > copyOfPoints[j], currentPoint cannot be the first point in the
-                            // segment.  This means that copyOfPoints[j] and all other points that share its slope with
-                            // currentPoint should be ignored.  The line segment with that slope is not maximal.
-//                            if (currentPoint.compareTo(copyOfPoints[j]) >= 0) {
-//                                ignoredSlope = currentSlope;
-//                                numberOfCollinearPoints = 0;
-//                                StdOut.println(" slope matched but currentPoint is >= copyOfPoints[j]");
-//                            } else {
-                                numberOfCollinearPoints++;
-
-                                if (largestPointInSequence == null || copyOfPoints[j].compareTo(largestPointInSequence) > 0) {
-                                    largestPointInSequence = copyOfPoints[j];
-                                }
-//                                StdOut.println(" slope matched and currentPoint is < copyOfPoints[j]");
-//                            }
-                        } else {
-//                            StdOut.println(" slope did not match or was ignored and numberOfCollinearPoints is: " + numberOfCollinearPoints);
-
-                            // @TODO Fix this.  What about the case where the previous point is the currentPoint?
-                            if (numberOfCollinearPoints >= 3) {
-//                                int indexOfEndPoint = copyOfPoints[j - 1] == currentPoint ? j - 2 : j - 1;
-//                                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[indexOfEndPoint]);
-//                                StdOut.println("Adding line segment from " + currentPoint + " to " + largestPointInSequence);
-//                                this.segments.add(new LineSegment(currentPoint, copyOfPoints[indexOfEndPoint]));
-//                                this.segments.add(new LineSegment(currentPoint, largestPointInSequence));
-
-                                this.addLineSegment(currentPoint, largestPointInSequence);
-                            }
-
-                            largestPointInSequence = null;
-
-                            // This point is collinear with the currentPoint by itself
-                            numberOfCollinearPoints = 1;
+                        if (largestPointInSequence == null || secondCopyOfPoints[j].compareTo(largestPointInSequence) > 0) {
+                            largestPointInSequence = secondCopyOfPoints[j];
                         }
-//                    }
+                    } else {
+                        if (numberOfCollinearPoints >= 3) {
+                            this.addLineSegment(currentPoint, largestPointInSequence);
+                        }
 
-                    previousSlope = currentPoint.slopeTo(copyOfPoints[j]);
-                } else if (currentPoint.compareTo(copyOfPoints[j]) > 0) {
-//                    currentPointIndex = j;
-//                } else {
-//                    StdOut.println(copyOfPoints[j] + " was ignored");
-                    // Ignore any other points that share this slope because we know that currentPoint is >=
-                    // copyOfPoints[j] so points that share the same slope cannot belong to the maximal segment.
-                    ignoredSlope = currentSlope;
-
-                    // @TODO Fix this.  What about the case where the previous point is the currentPoint?
-                    if (numberOfCollinearPoints >= 3) {
-//                        int indexOfEndPoint = copyOfPoints[j - 1] == currentPoint ? j - 2 : j - 1;
-//                        StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[indexOfEndPoint]);
-//                        StdOut.println("Adding line segment from " + currentPoint + " to " + largestPointInSequence);
-//                        this.segments.add(new LineSegment(currentPoint, copyOfPoints[indexOfEndPoint]));
-                        this.segments.add(new LineSegment(currentPoint, largestPointInSequence));
-                        numberOfCollinearPoints = 0;
+                        // This point is collinear with the currentPoint by itself
+                        numberOfCollinearPoints = 1;
+                        largestPointInSequence = secondCopyOfPoints[j];
                     }
 
+                    previousSlope = currentPoint.slopeTo(secondCopyOfPoints[j]);
+                } else if (currentPoint.compareTo(secondCopyOfPoints[j]) > 0) {
+                    // Ignore any other points that share this slope because we know that currentPoint is >
+                    // secondCopyOfPoints[j] so points that share the same slope cannot belong to the maximal segment.
+                    ignoredSlope = currentSlope;
+
+                    // Only add the line segment if the slope between currentPoint and secondCopyOfPoints[j] doesn't match.
+                    // If it does match then the previous line segment shares the same slope but currentPoint is >
+                    // secondCopyOfPoints[j] so this cannot be the maximal segment.
+                    if (numberOfCollinearPoints >= 3 && Double.compare(currentSlope, previousSlope) != 0) {
+                        this.addLineSegment(currentPoint, largestPointInSequence);
+                    }
+
+                    numberOfCollinearPoints = 0;
                     largestPointInSequence = null;
                 }
             }
 
             // If the counter never reset and we reached the end, don't forget to add the final segment.
             if (numberOfCollinearPoints >= 3) {
-                if (copyOfPoints[j - 1] != currentPoint && copyOfPoints[j - 1].compareTo(largestPointInSequence) > 0) {
-                    largestPointInSequence = copyOfPoints[j - 1];
+                if (secondCopyOfPoints[j - 1] != currentPoint && secondCopyOfPoints[j - 1].compareTo(largestPointInSequence) > 0) {
+                    largestPointInSequence = secondCopyOfPoints[j - 1];
                 }
 
-
-                // In case the last point in copyOfPoints is the currentPoint, rewind.
-                while (copyOfPoints[j - 1] == currentPoint) {
-                    j--;
-                }
-
-//                StdOut.println("j: " + j);
-
-//                StdOut.println("Adding line segment from " + currentPoint + " to " + copyOfPoints[j - 1]);
-//                StdOut.println("Adding line segment from " + currentPoint + " to " + largestPointInSequence);
-//                this.segments.add(new LineSegment(currentPoint, copyOfPoints[j - 1]));
-                this.segments.add(new LineSegment(currentPoint, largestPointInSequence));
+                this.addLineSegment(currentPoint, largestPointInSequence);
             }
         }
-
-//        StdOut.println("===============DONE==============");
     }
 
     /**
@@ -191,8 +127,7 @@ public class FastCollinearPoints {
      * @param start the starting point
      * @param end the ending point
      */
-    private void addLineSegment (Point start, Point end) {
-//        StdOut.println("Adding line segment from " + start + " to " + end);
+    private void addLineSegment(Point start, Point end) {
         this.segments.add(new LineSegment(start, end));
     }
 }
