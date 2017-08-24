@@ -81,13 +81,163 @@ class BoardTest {
 
     @Test
     void twin() {
+        int numberOfDifferences = 0;
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+        Board twin = board.twin();
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board.blocks[i][j] != twin.blocks[i][j]) {
+                    numberOfDifferences++;
+                }
+            }
+        }
+
+        assertEquals(2, numberOfDifferences);
     }
 
     @Test
-    void equals() {
+    void equalsWithSameBoard() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        assertTrue(board.equals(board));
+    }
+
+    @Test
+    void equalsWithNullBoard() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        assertFalse(board.equals(null));
+    }
+
+    @Test
+    void equalsWithDifferentObjectType() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        assertFalse(board.equals("hey"));
+    }
+
+    @Test
+    void equalsWithDifferentBoardThatHasTheSameBlocks() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+        Board board2 = new Board(blocks);
+
+        assertTrue(board.equals(board2));
+        assertTrue(board2.equals(board));
+    }
+
+    @Test
+    void equalsWithDifferentBoardThatHasDifferentBlocks() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        int[][] blocks2 = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 2;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 3;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board2 = new Board(blocks2);
+
+        assertFalse(board.equals(board2));
+        assertFalse(board2.equals(board));
     }
 
     @Test
     void neighbors() {
+    }
+
+    @Test
+    void testToString() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        assertEquals(
+            "3" + System.lineSeparator() +
+            " 8 1 3" + System.lineSeparator() +
+            " 4 0 2" + System.lineSeparator() +
+            " 7 6 5",
+            board.toString()
+        );
     }
 }
