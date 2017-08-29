@@ -214,7 +214,243 @@ class BoardTest {
     }
 
     @Test
-    void neighbors() {
+    void neighborsWhenBlankSpaceIsInTheMiddle() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 1;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 0;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+//        Iterable<Board> neighbors = board.neighbors();
+//        int numberOfNeighbors = 0;
+//
+//        for (Board neighbor : neighbors) {
+//            numberOfNeighbors++;
+//        }
+//
+//        assertEquals(4, numberOfNeighbors);
+
+        this.verifyNeighborAssertions(board, 4, 1, 1);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheTopRow() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 0;
+        blocks[0][2] = 3;
+        blocks[1][0] = 4;
+        blocks[1][1] = 1;
+        blocks[1][2] = 2;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(3, numberOfNeighbors);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheRightColumn() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 3;
+        blocks[0][2] = 2;
+        blocks[1][0] = 4;
+        blocks[1][1] = 1;
+        blocks[1][2] = 0;
+        blocks[2][0] = 7;
+        blocks[2][1] = 6;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(3, numberOfNeighbors);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheBottomRow() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 3;
+        blocks[0][2] = 2;
+        blocks[1][0] = 4;
+        blocks[1][1] = 1;
+        blocks[1][2] = 6;
+        blocks[2][0] = 7;
+        blocks[2][1] = 0;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(3, numberOfNeighbors);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheLeftColumn() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 8;
+        blocks[0][1] = 3;
+        blocks[0][2] = 2;
+        blocks[1][0] = 0;
+        blocks[1][1] = 1;
+        blocks[1][2] = 6;
+        blocks[2][0] = 7;
+        blocks[2][1] = 4;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(3, numberOfNeighbors);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheTopLeftSpace() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 0;
+        blocks[0][1] = 3;
+        blocks[0][2] = 2;
+        blocks[1][0] = 4;
+        blocks[1][1] = 1;
+        blocks[1][2] = 6;
+        blocks[2][0] = 7;
+        blocks[2][1] = 8;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(2, numberOfNeighbors);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheTopRightSpace() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 2;
+        blocks[0][1] = 3;
+        blocks[0][2] = 0;
+        blocks[1][0] = 4;
+        blocks[1][1] = 1;
+        blocks[1][2] = 6;
+        blocks[2][0] = 7;
+        blocks[2][1] = 8;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(2, numberOfNeighbors);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheBottomRightSpace() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 5;
+        blocks[0][1] = 3;
+        blocks[0][2] = 2;
+        blocks[1][0] = 4;
+        blocks[1][1] = 1;
+        blocks[1][2] = 6;
+        blocks[2][0] = 7;
+        blocks[2][1] = 8;
+        blocks[2][2] = 0;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(2, numberOfNeighbors);
+    }
+
+    @Test
+    void neighborsWhenBlankSpaceIsInTheBottomLeftSpace() {
+        int[][] blocks = new int[3][3];
+        blocks[0][0] = 7;
+        blocks[0][1] = 3;
+        blocks[0][2] = 2;
+        blocks[1][0] = 4;
+        blocks[1][1] = 1;
+        blocks[1][2] = 6;
+        blocks[2][0] = 0;
+        blocks[2][1] = 8;
+        blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(2, numberOfNeighbors);
+    }
+
+    private void verifyNeighborAssertions(Board board, int expectedNumberOfNeighbors, int blankRow, int blankCol) {
+        // @TODO Build the expected neighbor boards
+
+        Iterable<Board> neighbors = board.neighbors();
+        int numberOfNeighbors = 0;
+
+        for (Board neighbor : neighbors) {
+            numberOfNeighbors++;
+        }
+
+        assertEquals(expectedNumberOfNeighbors, numberOfNeighbors);
     }
 
     @Test
