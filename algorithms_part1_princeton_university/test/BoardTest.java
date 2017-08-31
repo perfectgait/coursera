@@ -228,16 +228,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-//        Iterable<Board> neighbors = board.neighbors();
-//        int numberOfNeighbors = 0;
-//
-//        for (Board neighbor : neighbors) {
-//            numberOfNeighbors++;
-//        }
-//
-//        assertEquals(4, numberOfNeighbors);
-
-        this.verifyNeighborAssertions(board, 4, 1, 1);
+        this.verifyNeighborAssertions(board, 4);
     }
 
     @Test
@@ -255,14 +246,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(3, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 3);
     }
 
     @Test
@@ -280,14 +264,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(3, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 3);
     }
 
     @Test
@@ -305,14 +282,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(3, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 3);
     }
 
     @Test
@@ -330,14 +300,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(3, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 3);
     }
 
     @Test
@@ -355,14 +318,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(2, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 2);
     }
 
     @Test
@@ -380,14 +336,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(2, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 2);
     }
 
     @Test
@@ -405,14 +354,7 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(2, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 2);
     }
 
     @Test
@@ -430,18 +372,11 @@ class BoardTest {
 
         Board board = new Board(blocks);
 
-        Iterable<Board> neighbors = board.neighbors();
-        int numberOfNeighbors = 0;
-
-        for (Board neighbor : neighbors) {
-            numberOfNeighbors++;
-        }
-
-        assertEquals(2, numberOfNeighbors);
+        this.verifyNeighborAssertions(board, 2);
     }
 
-    private void verifyNeighborAssertions(Board board, int expectedNumberOfNeighbors, int blankRow, int blankCol) {
-        // @TODO Build the expected neighbor boards
+    private void verifyNeighborAssertions(Board board, int expectedNumberOfNeighbors) {
+        // @TODO Verify the expected neighbor boards
 
         Iterable<Board> neighbors = board.neighbors();
         int numberOfNeighbors = 0;
@@ -470,9 +405,9 @@ class BoardTest {
 
         assertEquals(
             "3" + System.lineSeparator() +
-            " 8 1 3" + System.lineSeparator() +
-            " 4 0 2" + System.lineSeparator() +
-            " 7 6 5",
+            "8 1 3 " + System.lineSeparator() +
+            "4 0 2 " + System.lineSeparator() +
+            "7 6 5 " + System.lineSeparator(),
             board.toString()
         );
     }

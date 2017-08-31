@@ -6,8 +6,6 @@
  *  8 puzzle board
  ******************************************************************************/
 
-import edu.princeton.cs.algs4.StdOut;
-
 import java.util.Stack;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -75,20 +73,7 @@ public class Board {
      * @return whether or not the board is in the goal state
      */
     public boolean isGoal() {
-        for (int row = 0; row < this.dimension; row++) {
-            for (int col = 0; col < this.dimension; col++) {
-                if (this.blocks[row][col] != 0) {
-                    int expectedRow = (this.blocks[row][col] - 1) / this.dimension;
-                    int expectedCol = (this.blocks[row][col] - 1) % this.dimension;
-
-                    if (expectedRow != row || expectedCol != col) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
+        return this.hamming() == 0;
     }
 
     /**
@@ -153,8 +138,11 @@ public class Board {
         return true;
     }
 
+    /**
+     * @return The boards that can be made as a result of moves using the blank space
+     */
     public Iterable<Board> neighbors() {
-        Stack<Board> neighbors = new Stack<Board>();
+        Stack<Board> neighbors = new Stack<>();
         int i = 0;
         int j = 0;
         boolean blankSpaceFound = false;
@@ -221,7 +209,6 @@ public class Board {
             }
         }
 
-        // @TODO Find all boards that can be made as a result of moves using the blank space
         return neighbors;
     }
 
@@ -235,13 +222,11 @@ public class Board {
 
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
-                builder.append(" ");
                 builder.append(this.blocks[i][j]);
+                builder.append(" ");
             }
 
-            if (i < 2) {
-                builder.append(System.lineSeparator());
-            }
+            builder.append(System.lineSeparator());
         }
 
         return builder.toString();
