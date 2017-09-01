@@ -81,7 +81,6 @@ class BoardTest {
 
     @Test
     void twin() {
-        int numberOfDifferences = 0;
         int[][] blocks = new int[3][3];
         blocks[0][0] = 8;
         blocks[0][1] = 1;
@@ -96,15 +95,8 @@ class BoardTest {
         Board board = new Board(blocks);
         Board twin = board.twin();
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (board.blocks[i][j] != twin.blocks[i][j]) {
-                    numberOfDifferences++;
-                }
-            }
-        }
-
-        assertEquals(2, numberOfDifferences);
+        assertFalse(board.equals(twin));
+        assertFalse(twin.equals(board));
     }
 
     @Test
@@ -197,15 +189,50 @@ class BoardTest {
         Board board = new Board(blocks);
 
         int[][] blocks2 = new int[3][3];
+        blocks2[0][0] = 8;
+        blocks2[0][1] = 1;
+        blocks2[0][2] = 2;
+        blocks2[1][0] = 4;
+        blocks2[1][1] = 0;
+        blocks2[1][2] = 3;
+        blocks2[2][0] = 7;
+        blocks2[2][1] = 6;
+        blocks2[2][2] = 5;
+
+        Board board2 = new Board(blocks2);
+
+        assertFalse(board.equals(board2));
+        assertFalse(board2.equals(board));
+    }
+
+    @Test
+    void equalsWithBoardsOfDifferentDimensions() {
+        int[][] blocks = new int[3][3];
         blocks[0][0] = 8;
         blocks[0][1] = 1;
-        blocks[0][2] = 2;
+        blocks[0][2] = 3;
         blocks[1][0] = 4;
         blocks[1][1] = 0;
-        blocks[1][2] = 3;
+        blocks[1][2] = 2;
         blocks[2][0] = 7;
         blocks[2][1] = 6;
         blocks[2][2] = 5;
+
+        Board board = new Board(blocks);
+
+        int[][] blocks2 = new int[4][4];
+        blocks2[0][0] = 8;
+        blocks2[0][1] = 1;
+        blocks2[0][2] = 2;
+        blocks2[0][3] = 9;
+        blocks2[1][0] = 4;
+        blocks2[1][1] = 0;
+        blocks2[1][2] = 3;
+        blocks2[1][3] = 10;
+        blocks2[2][0] = 7;
+        blocks2[2][1] = 6;
+        blocks2[2][2] = 5;
+        blocks2[2][3] = 11;
 
         Board board2 = new Board(blocks2);
 

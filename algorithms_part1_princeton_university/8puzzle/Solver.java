@@ -1,3 +1,11 @@
+/******************************************************************************
+ *  Compilation:  javac Solver.java
+ *  Execution:    java Solver puzzle4.txt
+ *  Dependencies: java.util.LinkedList
+ *
+ *  8 puzzle board solver
+ ******************************************************************************/
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
@@ -5,14 +13,16 @@ import edu.princeton.cs.algs4.StdOut;
 import java.util.LinkedList;
 
 public class Solver {
-    private Board initial;
+    private final Board initial;
     private SearchNode goal;
+    private boolean isSolvableHasRun;
+    private boolean isSolvable;
 
     private class SearchNode implements Comparable<SearchNode> {
-        private Board board;
-        private int numberOfMoves;
-        private SearchNode previous;
-        private int manhattan;
+        private final Board board;
+        private final int numberOfMoves;
+        private final SearchNode previous;
+        private final int manhattan;
 
         private SearchNode(Board board, int numberOfMoves, SearchNode previous) {
             this.board = board;
@@ -36,48 +46,59 @@ public class Solver {
 
     public Solver(Board initial) {
         this.initial = initial;
-        MinPQ<SearchNode> queue = new MinPQ<>();
-        SearchNode node = new SearchNode(initial, 0, null);
-        queue.insert(node);
 
-        while (!queue.isEmpty() && !node.board.isGoal()) {
-            node = queue.delMin();
-            Iterable<Board> neighbors = node.board.neighbors();
+        if (this.isSolvable()) {
+            MinPQ<SearchNode> queue = new MinPQ<>();
+            SearchNode node = new SearchNode(initial, 0, null);
+            queue.insert(node);
 
-            for (Board neighbor : neighbors) {
-                if (!node.board.equals(neighbor)) {
-                    queue.insert(new SearchNode(neighbor, node.numberOfMoves + 1, node));
-                }
+            while (!queue.isEmpty() && !node.board.isGoal()) {
+                node = this.runIterationOfAStarAlgorithm(queue);
             }
-        }
 
-        // @TODO Is there a better way to do this?
-        if (node.board.isGoal()) {
-            this.goal = node;
+            // @TODO Is there a better way to do this?
+            if (node.board.isGoal()) {
+                this.goal = node;
+            }
         }
     }
 
     public boolean isSolvable() {
+        if (this.isSolvableHasRun) {
+            return this.isSolvable;
+        }
+
+        this.isSolvableHasRun = true;
+        this.isSolvable = false;
+
         Board twin = this.initial.twin();
 
-        MinPQ<SearchNode> queue1 = new MinPQ<>();
-        SearchNode node = new SearchNode(this.initial, 0, null);
-        queue1.insert(node);
+        MinPQ<SearchNode> originalBoardQueue = new MinPQ<>();
+        MinPQ<SearchNode> twinBoardQueue = new MinPQ<>();
+        SearchNode originalBoardNode = new SearchNode(this.initial, 0, null);
+        SearchNode twinBoardNode = new SearchNode(twin, 0, null);
 
-        while (!queue1.isEmpty() && !node.board.isGoal()) {
-            node = queue1.delMin();
-            Iterable<Board> neighbors = node.board.neighbors();
+        originalBoardQueue.insert(originalBoardNode);
+        twinBoardQueue.insert(twinBoardNode);
 
-            for (Board neighbor : neighbors) {
-                if (!node.board.equals(neighbor)) {
-                    queue1.insert(new SearchNode(neighbor, node.numberOfMoves + 1, node));
-                }
+        while (!originalBoardQueue.isEmpty() && !twinBoardQueue.isEmpty()) {
+            originalBoardNode = this.runIterationOfAStarAlgorithm(originalBoardQueue);
+            twinBoardNode = this.runIterationOfAStarAlgorithm(twinBoardQueue);
+
+            if (originalBoardNode.board.isGoal()) {
+                this.isSolvable = true;
+
+                return true;
+            }
+
+            if (twinBoardNode.board.isGoal()) {
+                this.isSolvable = false;
+
+                return false;
             }
         }
 
-
-
-        return true;
+        return false;
     }
 
     public int moves() {
@@ -102,6 +123,19 @@ public class Solver {
         }
 
         return null;
+    }
+
+    private SearchNode runIterationOfAStarAlgorithm(MinPQ<SearchNode> queue) {
+        SearchNode node = queue.delMin();
+        Iterable<Board> neighbors = node.board.neighbors();
+
+        for (Board neighbor : neighbors) {
+            if (!node.board.equals(neighbor)) {
+                queue.insert(new SearchNode(neighbor, node.numberOfMoves + 1, node));
+            }
+        }
+
+        return node;
     }
 
     public static void main(String[] args) {

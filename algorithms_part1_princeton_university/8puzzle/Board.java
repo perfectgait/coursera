@@ -6,15 +6,16 @@
  *  8 puzzle board
  ******************************************************************************/
 
+import edu.princeton.cs.algs4.StdRandom;
+
 import java.util.Stack;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Board {
-    public int[][] blocks;
-    private int dimension;
+    private final int[][] blocks;
+    private final int dimension;
 
     public Board(int[][] blocks) {
-        this.blocks = blocks;
+        this.blocks = this.copyBlocks(blocks);
         dimension = this.blocks.length;
     }
 
@@ -83,22 +84,22 @@ public class Board {
         int[][] copyOfBlocks = this.copyBlocks(this.blocks);
 
         // The random values should be exclusive of the dimension because it is not 0 based.
-        int randomRow1 = ThreadLocalRandom.current().nextInt(0, this.dimension);
-        int randomCol1 = ThreadLocalRandom.current().nextInt(0, this.dimension);
+        int randomRow1 = StdRandom.uniform(this.dimension);
+        int randomCol1 = StdRandom.uniform(this.dimension);
 
         // Don't choose the empty space
         while (copyOfBlocks[randomRow1][randomCol1] == 0) {
-            randomRow1 = ThreadLocalRandom.current().nextInt(0, this.dimension);
-            randomCol1 = ThreadLocalRandom.current().nextInt(0, this.dimension);
+            randomRow1 = StdRandom.uniform(this.dimension);
+            randomCol1 = StdRandom.uniform(this.dimension);
         }
 
-        int randomRow2 = ThreadLocalRandom.current().nextInt(0, this.dimension);
-        int randomCol2 = ThreadLocalRandom.current().nextInt(0, this.dimension);
+        int randomRow2 = StdRandom.uniform(this.dimension);
+        int randomCol2 = StdRandom.uniform(this.dimension);
 
         // Don't choose the same block as above or the empty space
         while ((randomRow2 == randomRow1 && randomCol2 == randomCol1) || copyOfBlocks[randomRow2][randomCol2] == 0) {
-            randomRow2 = ThreadLocalRandom.current().nextInt(0, this.dimension);
-            randomCol2 = ThreadLocalRandom.current().nextInt(0, this.dimension);
+            randomRow2 = StdRandom.uniform(this.dimension);
+            randomCol2 = StdRandom.uniform(this.dimension);
         }
 
         int tempBlock = copyOfBlocks[randomRow1][randomCol1];
@@ -126,6 +127,10 @@ public class Board {
         }
 
         Board that = (Board) y;
+
+        if (this.dimension != that.dimension()) {
+            return false;
+        }
 
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
@@ -155,13 +160,11 @@ public class Board {
                     blankSpaceFound = true;
                 }
 
-                // @TODO Is there a cleaner way to do this
                 if (!blankSpaceFound) {
                     j++;
                 }
             }
 
-            // @TODO Is there a cleaner way to do this
             if (!blankSpaceFound) {
                 i++;
             }
@@ -233,22 +236,18 @@ public class Board {
     }
 
     /**
-     * @param blocks the original blocks
-     * @return a copy of the blocks
+     * @param blocksToCopy the original blocksToCopy
+     * @return a copy of the blocksToCopy
      */
-    private int[][] copyBlocks(int[][] blocks) {
-        int[][] copyOfBlocks = new int[blocks.length][blocks.length];
+    private int[][] copyBlocks(int[][] blocksToCopy) {
+        int[][] copyOfBlocks = new int[blocksToCopy.length][blocksToCopy.length];
 
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks.length; j++) {
-                copyOfBlocks[i][j] = blocks[i][j];
+        for (int i = 0; i < blocksToCopy.length; i++) {
+            for (int j = 0; j < blocksToCopy.length; j++) {
+                copyOfBlocks[i][j] = blocksToCopy[i][j];
             }
         }
 
         return copyOfBlocks;
-    }
-
-    public static void main(String[] args) {
-
     }
 }
