@@ -22,6 +22,11 @@ public class Solver {
         private final SearchNode previous;
         private final int manhattan;
 
+        /**
+         * @param board The board
+         * @param numberOfMoves The number of moves
+         * @param previous The previous board
+         */
         private SearchNode(Board board, int numberOfMoves, SearchNode previous) {
             this.board = board;
             this.numberOfMoves = numberOfMoves;
@@ -29,6 +34,10 @@ public class Solver {
             this.manhattan = board.manhattan();
         }
 
+        /**
+         * @param that The search node
+         * @return -1 if this board is < that board, 1 if this board is > that board and 0 if both boards are equal
+         */
         public int compareTo(SearchNode that) {
             if (this.manhattan + this.numberOfMoves < that.manhattan + that.numberOfMoves) {
                 return -1;
@@ -40,9 +49,21 @@ public class Solver {
         }
     }
 
+    /**
+     * @param initial The initial board
+     */
     public Solver(Board initial) {
         if (initial == null) {
             throw new IllegalArgumentException("You may not pass a null board");
+        }
+
+        // If the initial board is in the goal state
+        if (initial.isGoal()) {
+            this.numberOfMoves = 0;
+            this.solution = new LinkedList<>();
+            this.solution.addFirst(initial);
+
+            return;
         }
 
         boolean solved = false;
@@ -51,20 +72,18 @@ public class Solver {
 
         MinPQ<SearchNode> originalBoardQueue = new MinPQ<>();
         MinPQ<SearchNode> twinBoardQueue = new MinPQ<>();
-        SearchNode originalBoardNode = new SearchNode(initial, 0, null);
-        SearchNode twinBoardNode = new SearchNode(twin, 0, null);
+        SearchNode originalBoardNode;
+        SearchNode twinBoardNode;
 
-        originalBoardQueue.insert(originalBoardNode);
-        twinBoardQueue.insert(twinBoardNode);
+        originalBoardQueue.insert(new SearchNode(initial, 0, null));
+        twinBoardQueue.insert(new SearchNode(twin, 0, null));
 
         while (!solved && !originalBoardQueue.isEmpty() && !twinBoardQueue.isEmpty()) {
             originalBoardNode = this.runIterationOfAStarAlgorithm(
-                originalBoardQueue,
-                originalBoardNode
+                originalBoardQueue
             );
             twinBoardNode = this.runIterationOfAStarAlgorithm(
-                twinBoardQueue,
-                twinBoardNode
+                twinBoardQueue
             );
 
             if (originalBoardNode.board.isGoal()) {
@@ -87,10 +106,16 @@ public class Solver {
         }
     }
 
+    /**
+     * @return Whether or not the initial board is solvable
+     */
     public boolean isSolvable() {
         return this.numberOfMoves >= 0;
     }
 
+    /**
+     * @return The number of moves to solve the initial board or -1 if it's unsolvable
+     */
     public int moves() {
         return this.numberOfMoves;
     }
@@ -103,12 +128,16 @@ public class Solver {
         return this.solution;
     }
 
-    private SearchNode runIterationOfAStarAlgorithm(MinPQ<SearchNode> queue, SearchNode previousNode) {
+    /**
+     * @param queue The priority queue
+     * @return The last de-queued node
+     */
+    private SearchNode runIterationOfAStarAlgorithm(MinPQ<SearchNode> queue) {
         SearchNode node = queue.delMin();
         Iterable<Board> neighbors = node.board.neighbors();
 
         for (Board neighbor : neighbors) {
-            if (previousNode == null || !previousNode.board.equals(neighbor)) {
+            if (node.previous == null || !node.previous.board.equals(neighbor)) {
                 queue.insert(new SearchNode(neighbor, node.numberOfMoves + 1, node));
             }
         }
