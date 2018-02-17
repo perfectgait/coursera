@@ -1,3 +1,11 @@
+/******************************************************************************
+ *  Compilation:  javac SAP.java
+ *  Execution:    java SAP
+ *  Dependencies: Digraph.java BreadthFirstDirectedPaths.java
+ *
+ *  Implements shortest ancestral path
+ ******************************************************************************/
+
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 
@@ -21,6 +29,30 @@ public class SAP {
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
 
+        return this.lengthFromBfs(bfs1, bfs2);
+    }
+
+
+
+    /**
+     * @param v First node # to start from
+     * @param w Second node # to start from
+     * @return The length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
+     */
+    public int length(Iterable<Integer> v, Iterable<Integer> w) {
+        // @TODO Optimize this using BFS that runs from both vertices
+        BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
+        BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
+
+        return this.lengthFromBfs(bfs1, bfs2);
+    }
+
+    /**
+     * @param bfs1 The first BFS
+     * @param bfs2 The second BFS
+     * @return The length of a shortest ancestral path; -1 if no such path
+     */
+    private int lengthFromBfs(BreadthFirstDirectedPaths bfs1, BreadthFirstDirectedPaths bfs2) {
         int length = -1;
 
         for (int i = 0; i < this.digraph.V(); i++) {
@@ -44,6 +76,29 @@ public class SAP {
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
 
+        return this.ancestorFromBfs(bfs1, bfs2);
+    }
+
+    //
+    /**
+     * @param v First node # to start from
+     * @param w Second node # to start from
+     * @return A common ancestor that participates in a shortest ancestral path; -1 if no such path
+     */
+    public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+        // @TODO Optimize this using BFS that runs from both vertices
+        BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
+        BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
+
+        return this.ancestorFromBfs(bfs1, bfs2);
+    }
+
+    /**
+     * @param bfs1 The first BFS
+     * @param bfs2 The second BFS
+     * @return A common ancestor that participates in a shortest ancestral path; -1 if no such path
+     */
+    private int ancestorFromBfs(BreadthFirstDirectedPaths bfs1, BreadthFirstDirectedPaths bfs2) {
         int length = -1;
         int ancestor = -1;
 
@@ -57,16 +112,6 @@ public class SAP {
         }
 
         return ancestor;
-    }
-
-    // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
-    public int length(Iterable<Integer> v, Iterable<Integer> w) {
-        return -1;
-    }
-
-    // a common ancestor that participates in shortest ancestral path; -1 if no such path
-    public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
-        return -1;
     }
 
     // do unit testing of this class

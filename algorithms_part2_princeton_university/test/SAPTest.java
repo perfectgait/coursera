@@ -2,6 +2,8 @@ import edu.princeton.cs.algs4.Digraph;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SAPTest {
@@ -103,10 +105,58 @@ class SAPTest {
     }
 
     @Test
-    void length1() {
+    void length_multipleSources() {
+        ArrayList<Integer> v = new ArrayList<Integer>();
+        ArrayList<Integer> w = new ArrayList<Integer>();
+
+        Digraph digraph = new Digraph(13);
+        digraph.addEdge(12, 10);
+        digraph.addEdge(11, 10);
+        digraph.addEdge(10, 5);
+        digraph.addEdge(9, 5);
+        digraph.addEdge(8, 3);
+        digraph.addEdge(7, 3);
+        digraph.addEdge(5, 1);
+        digraph.addEdge(4, 1);
+        digraph.addEdge(3, 1);
+        digraph.addEdge(2, 0);
+        digraph.addEdge(1, 0);
+
+        SAP sap = new SAP(digraph);
+        v.add(3);
+        v.add(1);
+        v.add(12);
+        w.add(2);
+        w.add(10);
+
+        assertEquals(1, sap.length(v, w));
     }
 
     @Test
-    void ancestor1() {
+    void ancestor_multipleSources() {
+        ArrayList<Integer> v = new ArrayList<Integer>();
+        ArrayList<Integer> w = new ArrayList<Integer>();
+
+        Digraph digraph = new Digraph(13);
+        digraph.addEdge(12, 10);
+        digraph.addEdge(11, 10);
+        digraph.addEdge(10, 5);
+        digraph.addEdge(9, 5);
+        digraph.addEdge(8, 3);
+        digraph.addEdge(7, 3);
+        digraph.addEdge(5, 1);
+        digraph.addEdge(4, 1);
+        digraph.addEdge(3, 1);
+        digraph.addEdge(2, 0);
+        digraph.addEdge(1, 0);
+
+        SAP sap = new SAP(digraph);
+        v.add(3);
+        v.add(1);
+        v.add(12);
+        w.add(2);
+        w.add(10);
+
+        assertEquals(10, sap.ancestor(v, w));
     }
 }
