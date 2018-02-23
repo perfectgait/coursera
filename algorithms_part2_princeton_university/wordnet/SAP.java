@@ -16,6 +16,10 @@ public class SAP {
      * @param G The Digraph
      */
     public SAP(Digraph G) {
+        if (G == null) {
+            throw new IllegalArgumentException();
+        }
+
         this.digraph = G;
     }
 
@@ -114,7 +118,6 @@ public class SAP {
         return ancestor;
     }
 
-    // do unit testing of this class
     public static void main(String[] args) {
 
     }

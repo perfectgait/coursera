@@ -9,6 +9,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class SAPTest {
 
     @Test
+    void SAP_nullDigraph() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new SAP(null);
+        });
+    }
+
+    @Test
     void length() {
         Digraph digraph = new Digraph(13);
         digraph.addEdge(12, 10);
