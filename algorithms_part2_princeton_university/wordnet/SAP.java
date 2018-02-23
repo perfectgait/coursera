@@ -29,6 +29,10 @@ public class SAP {
      * @return The length of the shortest ancestral path between v and w; -1 if no such path
      */
     public int length(int v, int w) {
+        if (v < 0 || v > this.digraph.V() - 1 || w < 0 || w > this.digraph.V() - 1) {
+            throw new IllegalArgumentException();
+        }
+
         // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
@@ -44,6 +48,20 @@ public class SAP {
      * @return The length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
      */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
+        int vertices = this.digraph.V() - 1;
+
+        for (Integer vertex : v) {
+            if (vertex < 0 || vertex > vertices) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        for (Integer vertex : w) {
+            if (vertex < 0 || vertex > vertices) {
+                throw new IllegalArgumentException();
+            }
+        }
+
         // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
@@ -76,6 +94,10 @@ public class SAP {
      * @return A common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
      */
     public int ancestor(int v, int w) {
+
+        if (v < 0 || v > this.digraph.V() - 1 || w < 0 || w > this.digraph.V() - 1) {
+            throw new IllegalArgumentException();
+        }
         // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
@@ -90,6 +112,20 @@ public class SAP {
      * @return A common ancestor that participates in a shortest ancestral path; -1 if no such path
      */
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+        int vertices = this.digraph.V() - 1;
+
+        for (Integer vertex : v) {
+            if (vertex < 0 || vertex > vertices) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        for (Integer vertex : w) {
+            if (vertex < 0 || vertex > vertices) {
+                throw new IllegalArgumentException();
+            }
+        }
+
         // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
