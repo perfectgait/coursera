@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SAPTest {
 
     @Test
-    void SAP_nullDigraph() {
+    void SAP_nullInputs() {
         assertThrows(IllegalArgumentException.class, () -> {
             new SAP(null);
         });

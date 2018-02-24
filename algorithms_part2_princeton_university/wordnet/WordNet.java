@@ -1,42 +1,87 @@
+import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Out;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class WordNet {
+    private HashMap<Integer, String[]> synsets;
+    private HashMap<String, Boolean> nouns;
+    private Digraph hypernyms;
+    private int totalSynsets;
 
-    // constructor takes the name of the two input files
+    /**
+     * @param synsets The filename of the synsets file
+     * @param hypernyms The filename of the hypernyms file
+     */
     public WordNet(String synsets, String hypernyms) {
-        Out out = new Out();
-
-        In in = new In(synsets);
-        String[] synsetLines = in.readAllLines();
-        in.close();
-
-        for (String synsetLine : synsetLines) {
-            String[] pieces = synsetLine.split(",");
-
-            for (String piece : pieces) {
-                out.print(piece);
-                out.print(" ");
-            }
-
-            out.println();
+        if (synsets == null || hypernyms == null) {
+            throw new IllegalArgumentException();
         }
 
-        in = new In(hypernyms);
-        String[] hypernymLines = in.readAllLines();
-        in.close();
+        this.parseSynsets(synsets);
+        this.parseHypernyms(hypernyms);
 
-        for (String hypernymLine : hypernymLines) {
-            String[] pieces = hypernymLine.split(",");
+        // @TODO Throw IllegalArgumentException if input does not represent a rooted DAG
+    }
 
-            for (String piece : pieces) {
-                out.print(piece);
-                out.print(" ");
+    /**
+     * @param synsets The filename of the synsets file
+     */
+    private void parseSynsets(String synsets) {
+        // Example synset line from file
+        // 36,AND_circuit AND_gate,a circuit in a computer that fires only when all of its inputs fire
+        // 36 is the id, AND_circuit AND_gate are the nouns in the synset, a circuit in a computer that fires only when
+        // all of its inputs fire is the gloss (definition)
+
+        this.synsets = new HashMap<>();
+        this.nouns = new HashMap<>();
+        this.totalSynsets = 0;
+
+        In in = new In(synsets);
+
+        while (!in.isEmpty()) {
+            String line = in.readLine();
+            String[] pieces = line.split(",");
+            String[] nouns = pieces[1].split(" ");
+
+            this.synsets.put(Integer.parseInt(pieces[0]), nouns);
+
+            for (String noun : nouns) {
+                // This will allow constant time lookup for isNoun()
+                this.nouns.put(noun, true);
             }
 
-            out.println();
+            this.totalSynsets++;
+        }
+
+        in.close();
+    }
+
+    /**
+     * @param hypernyms The filename of the hypernym file
+     */
+    private void parseHypernyms(String hypernyms) {
+        // Example hypernym line from file
+        // 164,21012,56099
+        // 164 is the synset id, 21012 and 56099 are the id numbers of the synsets hypernyms
+
+        In in = new In(hypernyms);
+        String[] lines = in.readAllLines();
+        in.close();
+        this.hypernyms = new Digraph(lines.length);
+
+        for (String line : lines) {
+            String[] pieces = line.split(",");
+            int synsetId = -1;
+
+            for (String id : pieces) {
+                if (synsetId == -1) {
+                    synsetId = Integer.parseInt(id);
+                } else {
+                    this.hypernyms.addEdge(synsetId, Integer.parseInt(id));
+                }
+            }
         }
     }
 
