@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
 import java.util.ArrayList;
@@ -22,7 +23,26 @@ public class WordNet {
         this.parseSynsets(synsets);
         this.parseHypernyms(hypernyms);
 
-        // @TODO Throw IllegalArgumentException if input does not represent a rooted DAG
+        // Test for cycle
+        DirectedCycle directedCycle = new DirectedCycle(this.hypernyms);
+
+        // Test for cycle
+        if (directedCycle.hasCycle()) {
+            throw new IllegalArgumentException();
+        }
+
+        int numberOfRoots = 0;
+
+        // Test for single root
+        for (int i = 0; i < this.hypernyms.V(); i++) {
+            if (this.hypernyms.outdegree(i) == 0) {
+                numberOfRoots++;
+            }
+
+            if (numberOfRoots > 1) {
+                throw new IllegalArgumentException();
+            }
+        }
     }
 
     /**
@@ -69,7 +89,7 @@ public class WordNet {
         In in = new In(hypernyms);
         String[] lines = in.readAllLines();
         in.close();
-        this.hypernyms = new Digraph(lines.length);
+        this.hypernyms = new Digraph(this.totalSynsets);
 
         for (String line : lines) {
             String[] pieces = line.split(",");
