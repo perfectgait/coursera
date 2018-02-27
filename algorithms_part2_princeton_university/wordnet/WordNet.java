@@ -2,14 +2,14 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WordNet {
     private HashMap<Integer, String[]> synsets;
-    private HashMap<String, Boolean> nouns;
+    private HashMap<String, Integer> nouns;
     private Digraph hypernyms;
     private int totalSynsets;
+    private SAP sap;
 
     /**
      * @param synsets The filename of the synsets file
@@ -26,7 +26,6 @@ public class WordNet {
         // Test for cycle
         DirectedCycle directedCycle = new DirectedCycle(this.hypernyms);
 
-        // Test for cycle
         if (directedCycle.hasCycle()) {
             throw new IllegalArgumentException();
         }
@@ -43,6 +42,8 @@ public class WordNet {
                 throw new IllegalArgumentException();
             }
         }
+
+        this.sap = new SAP(this.hypernyms);
     }
 
     /**
@@ -69,7 +70,7 @@ public class WordNet {
 
             for (String noun : nouns) {
                 // This will allow constant time lookup for isNoun()
-                this.nouns.put(noun, true);
+                this.nouns.put(noun, Integer.parseInt(pieces[0]));
             }
 
             this.totalSynsets++;
@@ -105,21 +106,39 @@ public class WordNet {
         }
     }
 
-    // returns all WordNet nouns
+    /**
+     * @return all WordNet nouns
+     */
     public Iterable<String> nouns() {
-        ArrayList<String> nouns = new ArrayList<>();
-
-        return nouns;
+        return this.nouns.keySet();
     }
 
-    // is the word a WordNet noun?
+    /**
+     * @param word The word to search for
+     * @return whether or not the word is a WordNet noun
+     */
     public boolean isNoun(String word) {
-        return false;
+        if (word == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return this.nouns.containsKey(word);
     }
 
-    // distance between nounA and nounB (defined below)
+    /**
+     * @param nounA The first noun
+     * @param nounB The second noun
+     * @return The shortest distance between the two nouns
+     */
     public int distance(String nounA, String nounB) {
-        return -1;
+        if (nounA == null || nounB == null || !this.isNoun(nounA) || !this.isNoun(nounB)) {
+            throw new IllegalArgumentException();
+        }
+
+        Integer synsetIdA = this.nouns.get(nounA);
+        Integer synsetIdB = this.nouns.get(nounB);
+
+        return this.sap.length(synsetIdA, synsetIdB);
     }
 
     // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
