@@ -1,3 +1,11 @@
+/******************************************************************************
+ *  Compilation:  javac WordNet.java
+ *  Execution:    java WordNet
+ *  Dependencies: Digraph.java DirectedCycle.java In.java
+ *
+ *  Implements WordNet
+ ******************************************************************************/
+
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
@@ -141,13 +149,24 @@ public class WordNet {
         return this.sap.length(synsetIdA, synsetIdB);
     }
 
-    // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
-    // in a shortest ancestral path (defined below)
+    /**
+     * @param nounA The first noun
+     * @param nounB The second noun
+     * @return A synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
+     *         in a shortest ancestral path (defined below)
+     */
     public String sap(String nounA, String nounB) {
-        return "banana";
+        if (nounA == null || nounB == null || !this.isNoun(nounA) || !this.isNoun(nounB)) {
+            throw new IllegalArgumentException();
+        }
+
+        Integer synsetIdA = this.nouns.get(nounA);
+        Integer synsetIdB = this.nouns.get(nounB);
+        Integer ancestor = this.sap.ancestor(synsetIdA, synsetIdB);
+
+        return this.synsets.get(ancestor)[0];
     }
 
-    // do unit testing of this class
     public static void main(String[] args) {
 
     }

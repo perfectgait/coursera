@@ -133,6 +133,51 @@ class WordNetTest {
     }
 
     @Test
+    void sap_nullInputs() {
+        WordNet wordnet = new WordNet(
+            this.directory + "/algorithms_part2_princeton_university/test/synsets3.txt",
+            this.directory + "/algorithms_part2_princeton_university/test/hypernyms3.txt"
+        );
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            wordnet.sap(null, "a");
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            wordnet.sap("a", null);
+        });
+    }
+
+    @Test
+    void sap_invalidWords() {
+        WordNet wordnet = new WordNet(
+            this.directory + "/algorithms_part2_princeton_university/test/synsets3.txt",
+            this.directory + "/algorithms_part2_princeton_university/test/hypernyms3.txt"
+        );
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            wordnet.sap("a", "invalid");
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            wordnet.sap("invalid", "a");
+        });
+    }
+
+    @Test
     void sap() {
+        WordNet wordnet = new WordNet(
+            this.directory + "/algorithms_part2_princeton_university/test/synsets6.txt",
+            this.directory + "/algorithms_part2_princeton_university/test/hypernyms6.txt"
+        );
+
+        assertEquals("a", wordnet.sap("b", "f"));
+
+        wordnet = new WordNet(
+            this.directory + "/algorithms_part2_princeton_university/test/synsets12.txt",
+            this.directory + "/algorithms_part2_princeton_university/test/hypernyms12.txt"
+        );
+
+        assertEquals("b", wordnet.sap("d", "l"));
     }
 }
