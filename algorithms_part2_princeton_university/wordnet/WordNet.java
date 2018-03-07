@@ -17,7 +17,7 @@ public class WordNet {
     private HashMap<String, Integer> nouns;
     private Digraph hypernyms;
     private int totalSynsets;
-    private SAP sap;
+    private final SAP sap;
 
     /**
      * @param synsets The filename of the synsets file
@@ -55,9 +55,9 @@ public class WordNet {
     }
 
     /**
-     * @param synsets The filename of the synsets file
+     * @param synsetsFilename The filename of the synsets file
      */
-    private void parseSynsets(String synsets) {
+    private void parseSynsets(String synsetsFilename) {
         // Example synset line from file
         // 36,AND_circuit AND_gate,a circuit in a computer that fires only when all of its inputs fire
         // 36 is the id, AND_circuit AND_gate are the nouns in the synset, a circuit in a computer that fires only when
@@ -67,16 +67,16 @@ public class WordNet {
         this.nouns = new HashMap<>();
         this.totalSynsets = 0;
 
-        In in = new In(synsets);
+        In in = new In(synsetsFilename);
 
         while (!in.isEmpty()) {
             String line = in.readLine();
             String[] pieces = line.split(",");
-            String[] nouns = pieces[1].split(" ");
+            String[] parsedNouns = pieces[1].split(" ");
 
-            this.synsets.put(Integer.parseInt(pieces[0]), nouns);
+            this.synsets.put(Integer.parseInt(pieces[0]), parsedNouns);
 
-            for (String noun : nouns) {
+            for (String noun : parsedNouns) {
                 // This will allow constant time lookup for isNoun()
                 this.nouns.put(noun, Integer.parseInt(pieces[0]));
             }
@@ -88,14 +88,14 @@ public class WordNet {
     }
 
     /**
-     * @param hypernyms The filename of the hypernym file
+     * @param hypernymsFilename The filename of the hypernym file
      */
-    private void parseHypernyms(String hypernyms) {
+    private void parseHypernyms(String hypernymsFilename) {
         // Example hypernym line from file
         // 164,21012,56099
         // 164 is the synset id, 21012 and 56099 are the id numbers of the synsets hypernyms
 
-        In in = new In(hypernyms);
+        In in = new In(hypernymsFilename);
         String[] lines = in.readAllLines();
         in.close();
         this.hypernyms = new Digraph(this.totalSynsets);
@@ -143,8 +143,8 @@ public class WordNet {
             throw new IllegalArgumentException();
         }
 
-        Integer synsetIdA = this.nouns.get(nounA);
-        Integer synsetIdB = this.nouns.get(nounB);
+        int synsetIdA = this.nouns.get(nounA);
+        int synsetIdB = this.nouns.get(nounB);
 
         return this.sap.length(synsetIdA, synsetIdB);
     }
@@ -160,14 +160,14 @@ public class WordNet {
             throw new IllegalArgumentException();
         }
 
-        Integer synsetIdA = this.nouns.get(nounA);
-        Integer synsetIdB = this.nouns.get(nounB);
-        Integer ancestor = this.sap.ancestor(synsetIdA, synsetIdB);
+        int synsetIdA = this.nouns.get(nounA);
+        int synsetIdB = this.nouns.get(nounB);
+        int ancestor = this.sap.ancestor(synsetIdA, synsetIdB);
 
         return this.synsets.get(ancestor)[0];
     }
 
     public static void main(String[] args) {
-
+        // Tests can be found in WordNetTest
     }
 }

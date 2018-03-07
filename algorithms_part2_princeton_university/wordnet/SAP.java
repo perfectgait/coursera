@@ -10,7 +10,7 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 
 public class SAP {
-    private Digraph digraph;
+    private final Digraph digraph;
 
     /**
      * @param G The Digraph
@@ -20,7 +20,7 @@ public class SAP {
             throw new IllegalArgumentException();
         }
 
-        this.digraph = G;
+        this.digraph = new Digraph(G);
     }
 
     /**
@@ -33,7 +33,6 @@ public class SAP {
             throw new IllegalArgumentException();
         }
 
-        // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
 
@@ -48,21 +47,24 @@ public class SAP {
      * @return The length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
      */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null || w == null) {
+            throw new IllegalArgumentException();
+        }
+
         int vertices = this.digraph.V() - 1;
 
-        for (Integer vertex : v) {
+        for (int vertex : v) {
             if (vertex < 0 || vertex > vertices) {
                 throw new IllegalArgumentException();
             }
         }
 
-        for (Integer vertex : w) {
+        for (int vertex : w) {
             if (vertex < 0 || vertex > vertices) {
                 throw new IllegalArgumentException();
             }
         }
 
-        // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
 
@@ -98,35 +100,36 @@ public class SAP {
         if (v < 0 || v > this.digraph.V() - 1 || w < 0 || w > this.digraph.V() - 1) {
             throw new IllegalArgumentException();
         }
-        // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
 
         return this.ancestorFromBfs(bfs1, bfs2);
     }
 
-    //
     /**
      * @param v First node # to start from
      * @param w Second node # to start from
      * @return A common ancestor that participates in a shortest ancestral path; -1 if no such path
      */
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null || w == null) {
+            throw new IllegalArgumentException();
+        }
+
         int vertices = this.digraph.V() - 1;
 
-        for (Integer vertex : v) {
+        for (int vertex : v) {
             if (vertex < 0 || vertex > vertices) {
                 throw new IllegalArgumentException();
             }
         }
 
-        for (Integer vertex : w) {
+        for (int vertex : w) {
             if (vertex < 0 || vertex > vertices) {
                 throw new IllegalArgumentException();
             }
         }
 
-        // @TODO Optimize this using BFS that runs from both vertices
         BreadthFirstDirectedPaths bfs1 = new BreadthFirstDirectedPaths(this.digraph, v);
         BreadthFirstDirectedPaths bfs2 = new BreadthFirstDirectedPaths(this.digraph, w);
 
@@ -155,6 +158,6 @@ public class SAP {
     }
 
     public static void main(String[] args) {
-
+        // Tests can be found in SAPTest
     }
 }

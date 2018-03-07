@@ -44,6 +44,6 @@ public class Outcast {
     }
 
     public static void main(String[] args) {
-
+        // Tests can be found in OutcastTest
     }
 }

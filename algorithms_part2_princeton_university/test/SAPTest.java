@@ -86,6 +86,25 @@ class SAPTest {
     }
 
     @Test
+    void length_multipleSources_nullInputs() {
+        ArrayList<Integer> v = new ArrayList<Integer>();
+        ArrayList<Integer> w = new ArrayList<Integer>();
+
+        Digraph digraph = new Digraph(13);
+        SAP sap = new SAP(digraph);
+        v.add(1);
+        w.add(5);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            sap.length(null, w);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            sap.length(v, null);
+        });
+    }
+
+    @Test
     void length_multipleSources_vOrWOutOfBounds() {
         ArrayList<Integer> v = new ArrayList<Integer>();
         ArrayList<Integer> w = new ArrayList<Integer>();
@@ -219,6 +238,25 @@ class SAPTest {
         sap = new SAP(digraph);
 
         assertEquals(0, sap.ancestor(0, 0));
+    }
+
+    @Test
+    void ancestor_multipleSources_nullInputs() {
+        ArrayList<Integer> v = new ArrayList<Integer>();
+        ArrayList<Integer> w = new ArrayList<Integer>();
+
+        Digraph digraph = new Digraph(13);
+        SAP sap = new SAP(digraph);
+        v.add(1);
+        w.add(5);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            sap.ancestor(null, w);
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            sap.ancestor(v, null);
+        });
     }
 
     @Test
