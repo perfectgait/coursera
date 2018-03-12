@@ -130,6 +130,13 @@ class WordNetTest {
         );
 
         assertEquals(4, wordnet.distance("d", "l"));
+
+        wordnet = new WordNet(
+            this.directory + "/algorithms_part2_princeton_university/test/synsets.txt",
+            this.directory + "/algorithms_part2_princeton_university/test/hypernyms.txt"
+        );
+
+        assertEquals(14, wordnet.distance("genus_Arenaria", "breadfruit"));
     }
 
     @Test
@@ -179,5 +186,12 @@ class WordNetTest {
         );
 
         assertEquals("b", wordnet.sap("d", "l"));
+
+        wordnet = new WordNet(
+            this.directory + "/algorithms_part2_princeton_university/test/synsets.txt",
+            this.directory + "/algorithms_part2_princeton_university/test/hypernyms.txt"
+        );
+
+        assertEquals("whole unit", wordnet.sap("stapling_machine", "songbird"));
     }
 }

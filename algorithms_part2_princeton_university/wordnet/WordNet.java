@@ -11,10 +11,11 @@ import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class WordNet {
-    private HashMap<Integer, String[]> synsets;
-    private HashMap<String, Integer> nouns;
+    private HashMap<Integer, String> synsets;
+    private HashMap<String, LinkedList<Integer>> nouns;
     private Digraph hypernyms;
     private int totalSynsets;
     private final SAP sap;
@@ -68,17 +69,24 @@ public class WordNet {
         this.totalSynsets = 0;
 
         In in = new In(synsetsFilename);
+        int synsetId;
 
         while (!in.isEmpty()) {
             String line = in.readLine();
             String[] pieces = line.split(",");
             String[] parsedNouns = pieces[1].split(" ");
+            synsetId = Integer.parseInt(pieces[0]);
 
-            this.synsets.put(Integer.parseInt(pieces[0]), parsedNouns);
+            this.synsets.put(synsetId, pieces[1]);
 
             for (String noun : parsedNouns) {
-                // This will allow constant time lookup for isNoun()
-                this.nouns.put(noun, Integer.parseInt(pieces[0]));
+                if (this.nouns.containsKey(noun)) {
+                    this.nouns.get(noun).add(synsetId);
+                } else {
+                    LinkedList<Integer> synsetIds = new LinkedList<>();
+                    synsetIds.add(synsetId);
+                    this.nouns.put(noun, synsetIds);
+                }
             }
 
             this.totalSynsets++;
@@ -143,10 +151,10 @@ public class WordNet {
             throw new IllegalArgumentException();
         }
 
-        int synsetIdA = this.nouns.get(nounA);
-        int synsetIdB = this.nouns.get(nounB);
+        LinkedList<Integer> synsetAIds = this.nouns.get(nounA);
+        LinkedList<Integer> synsetBIds = this.nouns.get(nounB);
 
-        return this.sap.length(synsetIdA, synsetIdB);
+        return this.sap.length(synsetAIds, synsetBIds);
     }
 
     /**
@@ -160,11 +168,11 @@ public class WordNet {
             throw new IllegalArgumentException();
         }
 
-        int synsetIdA = this.nouns.get(nounA);
-        int synsetIdB = this.nouns.get(nounB);
-        int ancestor = this.sap.ancestor(synsetIdA, synsetIdB);
+        LinkedList<Integer> synsetAIds = this.nouns.get(nounA);
+        LinkedList<Integer> synsetBIds = this.nouns.get(nounB);
+        int ancestor = this.sap.ancestor(synsetAIds, synsetBIds);
 
-        return this.synsets.get(ancestor)[0];
+        return this.synsets.get(ancestor);
     }
 
     public static void main(String[] args) {
